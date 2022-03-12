@@ -1,15 +1,30 @@
+use std::env;
+use std::path::Path;
+
 fn main() {
+    let mut clang_path;
+
+    if let Some(t) = env::var_os("LIBCLANG_PATH") {
+        clang_path = t.to_str().unwrap().to_owned();
+        clang_path.push_str("\\clang++.exe");
+    } else {
+        eprintln!("LIBCLANG_PATH environnement variable must be specified.");
+        return;
+    }
+
     println!(
         "cargo:rustc-link-search={}",
         "C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.18362.0\\um\\x64"
     );
+
+    // println!("cargo:rustc-link-arg={}", "/MT");
 
     println!("cargo:rustc-link-lib={}", "OpenGL32");
     println!("cargo:rustc-link-lib={}", "Uuid");
     println!("cargo:rustc-link-lib={}", "User32");
     println!("cargo:rustc-link-lib={}", "Gdi32");
 
-    cxx_build::bridge("src/main.rs")
+    cxx_build::bridge("src/lib.rs")
         .file("SpoutGL/SpoutAdapter.cpp")
         .file("SpoutGL/Spout.cpp")
         .file("SpoutGL/SpoutCopy.cpp")
@@ -22,12 +37,14 @@ fn main() {
         .file("SpoutGL/SpoutSenderNames.cpp")
         .file("SpoutGL/SpoutSharedMemory.cpp")
         .file("SpoutGL/SpoutUtils.cpp")
-        //.compiler(clang)
+        // .compiler(Path::new(&clang_path))
         // .target("x86_64-pc-windows-msvc")
         // .flag("-mssse3")
         // .pic(false)
-        //.archiver(ar)
-        .warnings(false)
+        // //.archiver(ar)
+        // .static_crt(true)
+        // .static_flag(true)
+        // .warnings(false)
         //.no_default_flags(true)
-        .compile("spout-rust");
+        .compile("spout_rust");
 }
