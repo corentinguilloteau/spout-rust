@@ -25,10 +25,10 @@ fn main() {
     println!("cargo:rustc-link-lib={}", "Gdi32");
 
     cxx_build::bridge("src/lib.rs")
-        .file("SpoutGL/SpoutAdapter.cpp")
         .file("SpoutGL/Spout.cpp")
         .file("SpoutGL/SpoutCopy.cpp")
         .file("SpoutGL/SpoutDirectX.cpp")
+        .file("SpoutGL/SpoutDX.cpp")
         .file("SpoutGL/SpoutFrameCount.cpp")
         .file("SpoutGL/SpoutGL.cpp")
         .file("SpoutGL/SpoutGLextensions.cpp")
@@ -37,6 +37,7 @@ fn main() {
         .file("SpoutGL/SpoutSenderNames.cpp")
         .file("SpoutGL/SpoutSharedMemory.cpp")
         .file("SpoutGL/SpoutUtils.cpp")
+        .file("SpoutGL/SpoutDXAdapter.cpp")
         // .compiler(Path::new(&clang_path))
         // .target("x86_64-pc-windows-msvc")
         // .flag("-mssse3")

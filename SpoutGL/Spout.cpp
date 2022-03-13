@@ -421,7 +421,7 @@ Spout::~Spout() {
 //     Thereafter, all sending functions create and update a sender
 //     based on the size passed and the name that has been set
 void Spout::SetSenderName(const char* sendername) {
-        if (!sendername) {
+    if (!sendername) {
         // Get executable name as default
         GetModuleFileNameA(NULL, m_SenderName, 256);
         PathStripPathA(m_SenderName);
@@ -1455,8 +1455,12 @@ bool Spout::ReceiveImage(unsigned char* pixels, GLenum glFormat, bool bInvert,
         return true;
     }
 
+    std::cout << "Not updated" << std::endl;
+
     // Make sure OpenGL and DirectX are initialized
     if (!OpenSpout()) return false;
+
+    std::cout << "Contexts are initialized" << std::endl;
 
     // Only RGBA, BGRA, RGB, BGR supported
     if (!(glFormat == GL_RGBA || glFormat == GL_BGRA_EXT ||
