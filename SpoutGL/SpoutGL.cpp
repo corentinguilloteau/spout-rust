@@ -10,58 +10,64 @@
 //		Revisions :
 //
 //		07.10.20	- Started class based on previous work with
-// SpoutGLDXinterop.cpp 					  for 2.006 and 2.007 beta :
+// SpoutGLDXinterop.cpp 					  for 2.006 and 2.007 beta
+// :
 // 15-07-14 - 03-09-20 					  with reference to the
-// SpoutDX class for consolidation of global variables. 					  Compatibility with
-//NVIDIA GL/DX interop is tested with fall-back to CPU share
+// SpoutDX class for consolidation of global variables.
+// Compatibility with
+// NVIDIA GL/DX interop is tested with fall-back to CPU share
 // using DirectX11 staging textures for failure.
-// MemoryShare is supported for receive only. 					  DX9
-// support is removed. 		09.12.20	- Correct ReadDX11texture for staging texture
+// MemoryShare is supported for receive only. DX9 support is removed.
+// 09.12.20	- Correct ReadDX11texture for staging texture
 // pitch 		27.12.20	- Functions allocated to SpoutSDK class
 // where appropriate 		14.01.21	- Add GetDX11Device() and
 // GetDX11Context() 					  add bInvert and
-// HostFBO options to WriteTextureReadback 		04.02.21	- SetHostPath
-// and
-// SetSenderCPUmode public 					  Add GetCPUshare and
-// SetCPUshare for forced CPU share
-// testing 		05.02.21	- Introduced m_bTextureShare and m_bCPUshare
-// flags to
-// handle mutiple options 		08.02.21	- WriteDX11texture,
-// ReadTextureData, OpenSpout, LoadGLextensions cleanup
-// OpenSpout look for DirectX to prevent
-// repeat 		26.02.21	- Change m_bSenderCPUmode to
-// m_bSenderCPU
+// HostFBO options to WriteTextureReadback 		04.02.21	-
+// SetHostPath and
+// SetSenderCPUmode public 					  Add GetCPUshare
+// and SetCPUshare for forced CPU share testing 		05.02.21
+// - Introduced m_bTextureShare and m_bCPUshare flags to handle mutiple options
+// 08.02.21	- WriteDX11texture, ReadTextureData, OpenSpout, LoadGLextensions
+// cleanup OpenSpout look for DirectX to prevent repeat 		26.02.21
+// - Change m_bSenderCPUmode to m_bSenderCPU
 //					- Add m_bSenderGLDX
 //					- Change SetSenderCPUmode to include CPU
-//sharing mode and GLDX compatibility
+// sharing mode and GLDX compatibility
 //					- Change SetSenderCPUmode name to
 // SetSenderID 		13.03.21	- Add m_bMemoryShare for possible
 // older 2.006 apps 					  Add
 // memoryshare.CreateSenderMemory
-// memoryshare.CloseSenderMemory() in destructor 					  Add WriteMemoryPixels 					  Change
-//ReadMemoryPixels to accept
-// GL_LUMINANCE 					  Use reinterpret_cast for
-// memoryshare.LockSenderMemory() 		15.03.21
+// memoryshare.CloseSenderMemory() in destructor 					  Add
+// WriteMemoryPixels 					  Change
+// ReadMemoryPixels to accept
+// GL_LUMINANCE 					  Use reinterpret_cast
+// for memoryshare.LockSenderMemory() 		15.03.21
 //- Remove m_bNewFrame 		20.03.21	- Add
-//memoryshare.GetSenderMemoryName() 		25.03.21
+// memoryshare.GetSenderMemoryName() 		25.03.21
 //- Disable frame sync in destructor 		02.04.21	- Change
-//ReadMemory to ReadMemoryTexture 		04.04.21	- Add
+// ReadMemory to ReadMemoryTexture 		04.04.21	- Add
 // GetSenderMemory 		08.05.21	- Remove ReadMemoryBuffer open
 // error log 		10.05.21	- Remove memoryshare struct from header
-// and replace with SpoutSharedMemory object. 					  Close
-// shared memory and sync event in SpoutGL class destructor 		27.05.21
-// - Add GetMemoryBufferSize 		09.06.21	- Add CreateMemoryBuffer,
-//DeleteMemoryBuffer 					  Revise and test data functions 					  All data functions return
-//false if 2.006 memoryshare mode. 		26.07.21	- Remove
+// and replace with SpoutSharedMemory object. Close shared memory and sync event
+// in SpoutGL class destructor 		27.05.21
+// - Add GetMemoryBufferSize 		09.06.21	- Add
+// CreateMemoryBuffer,
+// DeleteMemoryBuffer 					  Revise and test data functions
+// All data functions return
+// false if 2.006 memoryshare mode. 		26.07.21	- Remove
 // memorysize check from GetMemoryBufferSize for receiver 		10.08.21
 // - Correct LoadGLextensions to set no PBO availabliity if FBO fails
 // WriteDX11texture - unmap staging texture if data read fails
 // ReadTextureData - allow for no FBO support for low end
-// graphics 		29.09.21	- OpenSpout and LinkGLDXtextures - test for
+// graphics 		29.09.21	- OpenSpout and LinkGLDXtextures - test
+// for
 // GL/DX extensions 		15.10.21	- Remove interop object test for
-// repeat from OpenSpout 		09.11.21	- Revise UnloadTexturePixels 		12.11.21
-//- Add OpenGL context check in destructor 		13.11.21	- Remove code redundancy
-//in destructor 					  CleanupGL, CleanupInterop - add warning logs if no context
+// repeat from OpenSpout 		09.11.21	- Revise
+// UnloadTexturePixels 		12.11.21
+//- Add OpenGL context check in destructor 		13.11.21	- Remove
+//code redundancy
+// in destructor 					  CleanupGL, CleanupInterop - add
+// warning logs if no context
 // CleanupDX11 - add warning log if no device 		14.11.21	-
 // Correct ReadTextureData for RGB source 		16.11.21	- Remove
 // GLerror from destructor 		18.11.21	- InitTexture - restore
@@ -75,8 +81,8 @@
 // CleanupDX11() - test CleanupInterop before releasing textures
 // CleanupGL() - release interop objects before releasing shared texture
 // OpenDirectX and OpenDirectX11 optional device argument 		14.12.21
-//- Remove gl texture delete from GLDXready test. 		15.12.21	-
-//Change no context log warning to notice in CleanupGL and CleanupDX11
+//- Remove gl texture delete from GLDXready test. 		15.12.21
+//- Change no context log warning to notice in CleanupGL and CleanupDX11
 // LoadGLextensions - warn if pbo extensions not available or user disable
 // CleanupGL() - release
 // staging textures 		16.12.21	- Add "No error: case comment to
@@ -87,17 +93,17 @@
 // wglDXSetResourceShareHandleNV from LinkGLDXtextures
 // Remove dxShareHandle argument from LinkGLDXtextures 		18.12.21
 // - Restore default draw for all fbo functions
-// Release interop objects after LinkGLDXtextures in GLDXready 					  Create
-//m_bGLDXdone flag for GLDXready to avoid
-// repeats 		27.12.21	- Restore default fbo in SetSharedTextureData
-// if texture
-// ID is zero 		23.01.22	- Change pointer comparision from >0 to
-// nullptr in
-// OpenSpout (PR #80) 		25.01.22	- Remove m_hInteropDevice created
-// check in OpenSpout 					  Clean up logs in
-// LoadGLextensions 		21.02.22	- Restore glBufferData method
-// for in UnloadTexturePixels 					  Pending implementation
-// of glFencSync for glMapBufferRange method
+// Release interop objects after LinkGLDXtextures in GLDXready
+// Create
+// m_bGLDXdone flag for GLDXready to avoid
+// repeats 		27.12.21	- Restore default fbo in
+// SetSharedTextureData if texture ID is zero 		23.01.22	- Change
+// pointer comparision from >0 to nullptr in
+// OpenSpout (PR #80) 		25.01.22	- Remove m_hInteropDevice
+// created check in OpenSpout 					  Clean up logs
+// in LoadGLextensions 		21.02.22	- Restore glBufferData method
+// for in UnloadTexturePixels 					  Pending
+// implementation of glFencSync for glMapBufferRange method
 //
 // ====================================================================================
 /*
@@ -440,15 +446,11 @@ bool spoutGL::OpenSpout(bool bRetest) {
     m_bTextureShare = false;
     m_bCPUshare = false;
 
-    std::cout << "Checking capabilities" << std::endl;
-
     // DirectX capability is the minimum
     if (!OpenDirectX()) {
         SpoutLogFatal("spoutGL::OpenSpout - Could not initialize DirectX 11");
         return false;
     }
-
-    std::cout << "DX capable" << std::endl;
 
     // DirectX is OK
     // OpenGL device context is needed to go on
@@ -476,8 +478,6 @@ bool spoutGL::OpenSpout(bool bRetest) {
         // SpoutDX)
         return false;
     }
-
-    std::cout << "GL capable" << std::endl;
 
     //
     // OpenGL GPU texture sharing is used if GL/DX compatible (m_bUseGLDX =

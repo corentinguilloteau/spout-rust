@@ -796,19 +796,14 @@ bool spoutDX::ReceiveImage(unsigned char* pixels, unsigned int width,
     // Return if flagged for update
     // The update flag is reset when the receiving application calls IsUpdated()
     if (m_bUpdated) {
-        std::cout << "Update request" << std::endl;
         return true;
     }
 
-    std::cout << "No update request" << std::endl;
-
     // Try to receive texture details from a sender
     if (ReceiveSenderData()) {
-        std::cout << "Details received" << std::endl;
         // The sender name, width, height, format, shared texture handle and
         // pointer have been retrieved.
         if (m_bUpdated) {
-            std::cout << "Update request" << std::endl;
             // A new sender has been found or the one connected has changed.
             // The staging textures must be the same size and format as the
             // sender Create new staging textures if it is a different size
@@ -830,10 +825,8 @@ bool spoutDX::ReceiveImage(unsigned char* pixels, unsigned int width,
         //
         // Access the sender shared texture
         if (frame.CheckTextureAccess(m_pSharedTexture)) {
-            std::cout << "Texture accessed" << std::endl;
             // Check if the sender has produced a new frame.
             if (frame.GetNewFrame()) {
-                std::cout << "Getting new frame" << std::endl;
                 // Read from the sender GPU texture to CPU pixels via two
                 // staging textures One texture - approx 7 - 12 msec at
                 // 1920x1080 Two textures - approx 2.5 - 3.5 msec at 1920x1080
@@ -844,10 +837,8 @@ bool spoutDX::ReceiveImage(unsigned char* pixels, unsigned int width,
                 m_pImmediateContext->CopyResource(m_pStaging[m_Index],
                                                   m_pSharedTexture);
                 // Map and read from the second while the first is occupied
-                std::cout << "Copy: "
-                          << ReadPixelData(m_pStaging[m_NextIndex], pixels,
-                                           width, height, bRGB, bInvert, false)
-                          << std::endl;
+                ReadPixelData(m_pStaging[m_NextIndex], pixels, width, height,
+                              bRGB, bInvert, false);
             }
             // Allow access to the shared texture
             frame.AllowTextureAccess(m_pSharedTexture);
@@ -1752,8 +1743,6 @@ bool spoutDX::ReceiveSenderData() {
     // Make sure DirectX is initialized
     if (!OpenDirectX11()) return false;
 
-    std::cout << "DX11 open" << std::endl;
-
     // Initialization is recorded in this class for sender or receiver
     // m_Width or m_Height are established when the receiver connects to a
     // sender
@@ -1765,8 +1754,6 @@ bool spoutDX::ReceiveSenderData() {
         // Passed name was null, so find the active sender
         if (!GetActiveSender(sendername)) return false;  // No sender
     }
-
-    std::cout << "Sendername set" << std::endl;
 
     // If SpoutPanel has been opened, the active sender name could be different
     if (CheckSpoutPanel(sendername, 256)) {

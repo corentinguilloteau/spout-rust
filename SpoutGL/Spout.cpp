@@ -1455,12 +1455,8 @@ bool Spout::ReceiveImage(unsigned char* pixels, GLenum glFormat, bool bInvert,
         return true;
     }
 
-    std::cout << "Not updated" << std::endl;
-
     // Make sure OpenGL and DirectX are initialized
     if (!OpenSpout()) return false;
-
-    std::cout << "Contexts are initialized" << std::endl;
 
     // Only RGBA, BGRA, RGB, BGR supported
     if (!(glFormat == GL_RGBA || glFormat == GL_BGRA_EXT ||

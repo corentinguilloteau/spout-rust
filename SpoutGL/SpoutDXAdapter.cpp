@@ -17,8 +17,6 @@ void SpoutDXAdapter::AdapterSetReceiverName(std::string& sendername) {
     const char* convertedSenderName = sendername.c_str();
 
     this->SetReceiverName(convertedSenderName);
-
-    std::cout << "here " << convertedSenderName << std::endl;
 }
 
 void SpoutDXAdapter::AdapterReleaseReceiver() { this->ReleaseReceiver(); }
@@ -29,22 +27,19 @@ bool SpoutDXAdapter::AdapterReceiveImage(rust::Slice<uint8_t> pixels,
                                          bool bInvert) {
     const size_t store_size = pixels.size();
 
-    if (store_size < width * height * 4) {
+    if (store_size < width * height * 3) {
         return false;
     }
-
-    std::cout << "Size: " << store_size << std::endl;
 
     unsigned char* raw_pixels =
         (unsigned char*)calloc(width * height * 4, sizeof(unsigned char));
 
-    bool res = this->ReceiveImage(raw_pixels, width, height, bRGB, bInvert);
+    bool res = this->ReceiveImage(raw_pixels, width, height, false, bInvert);
 
-    printf("Inside pixel: %d %d %d\n", raw_pixels[100], raw_pixels[101],
-           raw_pixels[102]);
-
-    for (int i = 0; i < store_size; i++) {
-        pixels[i] = (uint8_t)raw_pixels[i];
+    for (int i = 0; i < store_size / 3; i++) {
+        pixels[3 * i] = (uint8_t)raw_pixels[4 * i + 2];
+        pixels[3 * i + 1] = (uint8_t)raw_pixels[4 * i + 1];
+        pixels[3 * i + 2] = (uint8_t)raw_pixels[4 * i];
     }
 
     free(raw_pixels);
