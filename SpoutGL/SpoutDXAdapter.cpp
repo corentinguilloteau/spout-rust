@@ -60,3 +60,17 @@ unsigned int SpoutDXAdapter::AdapterGetSenderWidth() {
 unsigned int SpoutDXAdapter::AdapterGetSenderHeight() {
     return this->GetSenderHeight();
 }
+
+int SpoutDXAdapter::AdapterGetSenderCount() { return this->GetSenderCount(); }
+
+rust::String SpoutDXAdapter::AdapterGetSenderNameByIndex(int index) {
+    char* name = (char*)calloc(1024, sizeof(char));
+
+    this->GetSender(index, name, 1024);
+
+    const rust::String* transformedName = new rust::String(name);
+
+    free(name);
+
+    return *transformedName;
+}

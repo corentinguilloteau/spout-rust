@@ -1,4 +1,3 @@
-use cxx::CxxString;
 #[cxx::bridge]
 pub mod ffi {
 
@@ -33,6 +32,11 @@ pub mod ffi {
 
         pub fn AdapterOpenDirectX11(self: Pin<&mut SpoutDXAdapter>) -> bool;
         pub fn AdapterCloseDirectX11(self: Pin<&mut SpoutDXAdapter>);
+
+        // Sender Names
+
+        pub fn AdapterGetSenderCount(self: Pin<&mut SpoutDXAdapter>) -> i32;
+        pub fn AdapterGetSenderNameByIndex(self: Pin<&mut SpoutDXAdapter>, index: i32) -> String;
 
     }
 }

@@ -73,6 +73,9 @@ class SPOUT_DLLEXP SpoutDXAdapter : private spoutDX {
     unsigned int AdapterGetSenderWidth();
     // Received sender height
     unsigned int AdapterGetSenderHeight();
+
+    int AdapterGetSenderCount();
+    rust::String AdapterGetSenderNameByIndex(int index);
 };
 
 std::unique_ptr<SpoutDXAdapter> new_spout_adapter();
